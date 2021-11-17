@@ -1,22 +1,23 @@
 from typing import List
 from uuid import uuid4
 from tinydb import TinyDB
+import numpy as np
 
-JOUEURS_PAR_TOURNOI = 8
+JOUEURS_PAR_TOURNOI = 4
+db = TinyDB("db.json")
 
 class Joueur:
 
     def __init__(self, nom_de_famille=None, prenom=None, date_de_naissance=None, sexe=None,
-                 nb_de_points=0, ranking=None):
+                 nb_de_points=0, elo=None):
 
         self.nom_de_famille = nom_de_famille
         self.prenom = prenom
         self.date_de_naissance = date_de_naissance
         self.sexe = sexe
         self.nb_de_points = nb_de_points
-        self.ranking = ranking
+        self.elo = elo
         self.id = uuid4()
-
 
     def changer_classement(self, ajustement_points: float):
         self.nb_de_points += ajustement_points
@@ -28,7 +29,21 @@ class Joueur:
         return f" {self.nom_de_famille}, {self.prenom}"
 
     def afficher_joueur(self):
-        return f"Joueur: {self.nom_de_famille}, {self.prenom}, {self.date_de_naissance}, {self.sexe}, {self.ranking}, {self.nb_de_points}"
+        return f"Joueur: {self.nom_de_famille}, {self.prenom}, {self.date_de_naissance}, {self.sexe}, {self.elo}, {self.nb_de_points}"
+
+    def serialize(self):
+        serialized_joueur = {
+            "nom_de_famille": self.nom_de_famille,
+            "prenom": self.prenom,
+            "date_de_naissance": self.date_de_naissance,
+            "sexe": self.sexe,
+            "nb_de_points": self.nb_de_points,
+            "elo": self.elo,
+            "id" : str(self.id)
+        }
+        return serialized_joueur
+#j1 = Joueur("Parent", "Nicolas", "18/08/92", "Homme")
+#j2 = Joueur("Parent", "Nicolas", "18/08/92", "Homme")
 
 class Tournoi:
     def __init__(self, nom=None, lieu=None, date=None
@@ -58,42 +73,20 @@ class Tournoi:
 
         else: print(erreur)
 
+    def tri_joueurs(self):
+        pass
+
     def generate_pairs(self):
         length = len(self.joueurs)
         diviser_liste = length // 2
         first_half = self.joueurs[:diviser_liste]
         second_half = self.joueurs[diviser_liste:]
-        liste_paires1 = []
-        liste_paires2 = []
-        liste_paires3 = []
-        liste_paires4 = []
+        liste_matchs = []
         for i in range(JOUEURS_PAR_TOURNOI // 2):
-            print(f"{(Joueur.__str__(first_half[i]))} joue contre {(Joueur.__str__(second_half[i]))}")
-
-            if len(liste_paires1) <= 1:
-                liste_paires1.append((Joueur.__str__(first_half[i])))
-                liste_paires1.append((Joueur.__str__(second_half[i])))
-
-            elif len(liste_paires2) <= 1:
-                liste_paires2.append((Joueur.__str__(first_half[i])))
-                liste_paires2.append((Joueur.__str__(second_half[i])))
-
-            elif len(liste_paires3) <= 1:
-                liste_paires3.append((Joueur.__str__(first_half[i])))
-                liste_paires3.append((Joueur.__str__(second_half[i])))
-            else:
-                liste_paires4.append((Joueur.__str__(first_half[i])))
-                liste_paires4.append((Joueur.__str__(second_half[i])))
-
-        print(liste_paires1)
-        print(liste_paires2)
-        print(liste_paires3)
-        print(liste_paires4)
-
-
-
-
-
+            #print(f"{(Joueur.__str__(first_half[i]))} joue contre {(Joueur.__str__(second_half[i]))}")
+            liste_matchs.append((Joueur.__str__(first_half[i])))
+            liste_matchs.append((Joueur.__str__(second_half[i])))
+        return liste_matchs
 
     def enter_results(self):
         pass
@@ -102,57 +95,94 @@ class Tournoi:
         return print(f"Tournoi: {self.nom}, {self.lieu}, {self.date}, {self.description}, {self.time}, {self.nb_de_tours}")
 
     def afficher_liste_joueurs(self):
-        return print(f" Liste des joueurs :{self.joueurs}")
+        return print(f" Liste des joueurs(id) :{self.joueurs}")
 
     def creer_les_joueurs(self):
         self.joueurs = []
         nb_de_joueurs = JOUEURS_PAR_TOURNOI
         for i in range(nb_de_joueurs):
             print("Joueur: ", i + 1)
-            joueur = Joueur(nom_de_famille=input("nom_de_famille: "),
-                            prenom=input("prenom: "),
-                            date_de_naissance=input("date_de_naissance: "),
-                            sexe=input("sexe: "))
+            joueur = Joueur(nom_de_famille=input("Nom_de_famille: "),
+                            prenom=input("Prenom: "),
+                            date_de_naissance=input("Date_de_naissance: "),
+                            sexe=input("Sexe: "),
+                            elo=input("Elo: "))
             self.joueurs.append(joueur)
 
     def get_joueurs_id(self):
        return [j.id for j in self.joueurs]
 
+    def get_joueurs_infos(self):
+        return [vars(k) for k in self.joueurs]
+
 t = Tournoi()
 t.creer_tournoi()
-#print(t.__dict__)
 t.creer_les_joueurs()
 t.ajouter_controle_du_temps()
 #Joueurs = t.get_joueurs_id()
 t.afficher_tournoi()
-t.afficher_liste_joueurs()
-t.generate_pairs()
+#t.afficher_liste_joueurs()
+#print(t.generate_pairs())
 #print(Joueur.__str__(t.joueurs[1]))
+#x = t.get_joueurs_infos().__dict__
+#table_joueurs = db.table("joueurs")
+#table_joueurs.truncate()
+#table_joueurs.insert(x)
 
+class Tour:
+    def __init__(self, nom=None, date=None, heure_de_debut=None, heure_de_fin=None):
+        self.nom = nom
+        self.date = date
+        self.heure_de_debut = heure_de_debut
+        self.heure_de_fin = heure_de_fin
+        self.matchs = t.generate_pairs()
+
+    def creer_tour(self):
+        self.nom = "Round 1"
+        self.date = input("Entrez la date du début du tour: ")
+        self.heure_de_debut = input("Entrez l'heure du début du tour: ")
+        self.heure_de_fin = input("Entrez l'heure de fin du tour: ")
+
+    def start_tour(self):
+        print(self.creer_tour())
+        print(self.matchs)
+        pass
+
+    def afficher_matchs(self):
+        return f"{self.matchs}"
+
+    def afficher_tour(self):
+        return f"Tour: {self.nom}, {self.date}, {self.heure_de_debut}, {self.heure_de_fin}, {self.matchs}"
+
+    def afficher_resultats_tour(self):
+        for adversaire, resultat_joueur in zip(m.adversaires, m.resultats_joueurs):
+            print(f"{adversaire}, a {resultat_joueur} point(s)")
+
+tour = Tour()
 
 class Match:
 
-    def __init__(self, adversaires: list):
-        self.adversaires = adversaires
+    def __init__(self):
+        self.adversaires = [] #np.array_split(tour.matchs, 1)
         self.resultats_joueurs = []
 
     def ajouter_des_points(self):
-        add1 = int((input("Entez le nombre de points du Joueur1 ")))
-        add2 = int((input("Entez le nombre de points du Joueur2 ")))
+        result1 = int((input("Entez le nombre de points du Joueur1 ")))
+        result2 = int((input("Entez le nombre de points du Joueur2 ")))
         message = f"Erreur le nombre de points doit être un 0, 0.5 ou 1"
         try:
-            if add1 == 0 or add1 == 1 or add1 == 0.5:
-                self.resultats_joueurs.append(add1)
+            if result1 == 0 or result1 == 1 or result1 == 0.5:
+                self.resultats_joueurs.append(result1)
             else: raise ValueError(message)
 
-            if add2 == 0 or add2 == 1 or add2 == 0.5:
-                self.resultats_joueurs.append(add2)
+            if result2 == 0 or result2 == 1 or result2 == 0.5:
+                self.resultats_joueurs.append(result2)
             else :raise ValueError(message)
 
         except: print(message)
 
 
-    def definir_le_gagant(self):
+    def definir_le_gagnant(self):
         self.gagnant = 0
         if self.resultj1 > self.resultj2:
             self.gagnant = 1
@@ -165,8 +195,30 @@ class Match:
         elif self.resultj1 == self.resultj2:
             return f": Draw"
 
-    def jouer_le_match(self):
-        return print(f"{self.adversaires[0]} joue contre {self.adversaires[1]}")
+    def split_liste(self):
+        pass
+
+    def jouer_les_match(self):
+        self.adversaires = tour.matchs
+        i = 0
+        print(self.adversaires)
+        while i <= (len(self.adversaires) // 2):
+            print(f"{self.adversaires[i]} joue contre {self.adversaires[i + 1]}")
+            result1 = input(f"Entez le nombre de points de {self.adversaires[i]} ")
+            result2 = input(f"Entez le nombre de points de {self.adversaires[i + 1]} ")
+            message = f"Erreur le nombre de points doit être un 0, 0.5 ou 1"
+            try:
+                if result1 == "0" or result1 == "1" or result1 == "0.5":
+                    self.resultats_joueurs.append(result1)
+                else:
+                    raise ValueError(message)
+                if result2 == "0" or result2 == "1" or result2 == "0.5":
+                    self.resultats_joueurs.append(result2)
+                else:
+                    raise ValueError(message)
+            except:
+                print(message)
+            i += 2
 
     def afficher_result(self):
         return print(f"Résultat du match: \n{self.adversaires[0]} : {self.resultats_joueurs[0]}, {self.adversaires[1]} : {self.resultats_joueurs[1]}")
@@ -187,28 +239,17 @@ class Match:
         elif self.resultat1 == self.resultat2:
             self.resultj1 += resultat1
             self.resultj2 += resultat2
+
+m = Match()
+m.jouer_les_match()
+tour.afficher_resultats_tour()
+#print(m.adversaires)
+#print(m.__dict__)
+#m.ajouter_des_points()
+#m.afficher_result()
+
 """
-m = Match(t.joueurs)
-m.jouer_le_match()
-m.ajouter_des_points()
-m.afficher_result()
-#print(match1.afficher_result())
-#match1 = Match(tournoi1.players[0], tournoi1.players[1])
-#match1.resultj1 = input("Entrez le score pour le joueur1:")
-#match1.resultj2 = input("Entrez le score pour le joueur2:")
-#match1.attribuer_points(1,0)
-#print(match1.resultj2)
-#print(match1.afficher_result())
+for x in m.adversaires:
+    print(list(x))
 """
-class Tour:
-    def __init__(self, nom, date, heure_de_debut, heure_de_fin):
-        self.nom = nom
-        self.date = date
-        self.heure_de_debut = heure_de_debut
-        self.heure_de_fin = heure_de_fin
-
-    def afficher_tour(self):
-        return f"Joueur: {self.nom}, {self.date}, {self.heure_de_debut}, {self.heure_de_fin}"
-
-
 
