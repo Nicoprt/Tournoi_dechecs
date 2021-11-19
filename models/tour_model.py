@@ -1,4 +1,4 @@
-from tournoi_model import Tournoi
+from tournoi_model import Tournoi, t
 from match_model import Match
 
 class Tour:
@@ -7,9 +7,9 @@ class Tour:
         self.date = date
         self.heure_de_debut = heure_de_debut
         self.heure_de_fin = heure_de_fin
-        self.matchs = t.generate_pairs()
+        self.matchs = [] #LISTE DES MATCHS DU TOUR
 
-    def creer_tour(self):
+    def start_tour(self):
         self.nom = "Round 1"
         self.date = input("Entrez la date du début du tour: ")
         self.heure_de_debut = input("Entrez l'heure du début du tour: ")

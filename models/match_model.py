@@ -1,21 +1,22 @@
 class Match:
 
-    def __init__(self):
-        self.adversaires = [] #np.array_split(tour.matchs, 1)
-        self.resultats_joueurs = []
+    def __init__(self, j1=None, j2=None, j1score=0, j2score=0):
+        self.j1 = j1
+        self.j2 = j2
+        self.j1score = j1score
+        self.j2score = j2score
 
     def ajouter_des_points(self):
-        result1 = int((input("Entez le nombre de points du Joueur1 ")))
-        result2 = int((input("Entez le nombre de points du Joueur2 ")))
+        j1score = int((input("Entez le nombre de points du Joueur1 ")))
+        j2score = int((input("Entez le nombre de points du Joueur2 ")))
         message = f"Erreur le nombre de points doit être un 0, 0.5 ou 1"
         try:
-            if result1 == 0 or result1 == 1 or result1 == 0.5:
-                self.resultats_joueurs.append(result1)
+            if j1score == 0 or j1score == 1 or j1score == 0.5:
+                j1score = int((input("Entez le nombre de points du Joueur1 ")))
             else: raise ValueError(message)
-
-            if result2 == 0 or result2 == 1 or result2 == 0.5:
-                self.resultats_joueurs.append(result2)
-            else :raise ValueError(message)
+            if j2score == 0 or j2score == 1 or j2score == 0.5:
+                j2score = int((input("Entez le nombre de points du Joueur2 ")))
+            else:raise ValueError(message)
 
         except: print(message)
 
