@@ -5,7 +5,7 @@ class Match:
         self.j2 = j2
         self.j1score = j1score
         self.j2score = j2score
-
+"""
     def ajouter_des_points(self):
         j1score = int((input("Entez le nombre de points du Joueur1 ")))
         j2score = int((input("Entez le nombre de points du Joueur2 ")))
@@ -87,7 +87,7 @@ tour.afficher_resultats_tour()
 #m.ajouter_des_points()
 #m.afficher_result()
 
-"""
+
 for x in m.adversaires:
     print(list(x))
 """
