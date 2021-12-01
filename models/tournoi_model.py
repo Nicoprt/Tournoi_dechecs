@@ -3,7 +3,7 @@ from uuid import uuid4
 from tinydb import TinyDB
 from player_model import Joueur
 
-JOUEURS_PAR_TOURNOI = 3
+JOUEURS_PAR_TOURNOI = 1
 db = TinyDB("db.json")
 
 
@@ -18,6 +18,7 @@ class Tournoi:
         self.controle_du_temps = controle_du_temps
         self.tours = tours
         self.joueurs_id = joueurs_id
+        #self.joueurs = joueurs
 
     def tournoi_id(self):
         return f"{self.joueurs_id}"
@@ -29,10 +30,5 @@ class Tournoi:
     def afficher_liste_joueurs(self):
         return print(f" Liste des joueurs(id) :{self.joueurs_id}")
 
-    def get_joueurs_id(self):
-       return [j.id for j in self.joueurs_id]
-
-    def get_joueurs_infos(self):
-        return [vars(k) for k in self.joueurs_id]
 
 

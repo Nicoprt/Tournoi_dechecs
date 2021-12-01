@@ -1,13 +1,12 @@
 from uuid import uuid4
 from tinydb import TinyDB, Query
 
-JOUEURS_PAR_TOURNOI = 3
 db = TinyDB("joueurs.json")
 
 class Joueur:
 
     def __init__(self, nom_de_famille=None, prenom=None, date_de_naissance=None, sexe=None,
-                 nb_de_points=0, elo=0, j_id=None):
+                 nb_de_points=0, elo:int=0, j_id=None):
 
         self.nom_de_famille = nom_de_famille
         self.prenom = prenom
@@ -57,13 +56,13 @@ class Joueur:
                    sexe=sexe, nb_de_points=nb_de_points,
                    elo=elo, j_id=j_id)
         return x
-
+"""
 j1 = Joueur("Parent", "Nicolas", "18/08/92", "Homme")
 j1.serialize()
 players_table = db.table("joueurs")
 players_table.truncate()	# clear the table first
 players_table.insert(j1.serialize())
-
+"""
 
 
 

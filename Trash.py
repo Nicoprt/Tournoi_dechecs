@@ -92,3 +92,35 @@ class Match:
                             sexe=input("Sexe: "),
                             elo=input("Elo: "))
             self.joueurs.append(joueur)
+
+    def generate_pairs(self):
+        length = len(self.joueurs)
+        diviser_liste = length // 2
+        first_half = self.joueurs[:diviser_liste]
+        second_half = self.joueurs[diviser_liste:]
+        liste_paires1 = []
+        liste_paires2 = []
+        liste_paires3 = []
+        liste_paires4 = []
+        for i in range(JOUEURS_PAR_TOURNOI // 2):
+            print(f"{(Joueur.__str__(first_half[i]))} joue contre {(Joueur.__str__(second_half[i]))}")
+
+            if len(liste_paires1) <= 1:
+                liste_paires1.append((Joueur.__str__(first_half[i])))
+                liste_paires1.append((Joueur.__str__(second_half[i])))
+
+            elif len(liste_paires2) <= 1:
+                liste_paires2.append((Joueur.__str__(first_half[i])))
+                liste_paires2.append((Joueur.__str__(second_half[i])))
+
+            elif len(liste_paires3) <= 1:
+                liste_paires3.append((Joueur.__str__(first_half[i])))
+                liste_paires3.append((Joueur.__str__(second_half[i])))
+            else:
+                liste_paires4.append((Joueur.__str__(first_half[i])))
+                liste_paires4.append((Joueur.__str__(second_half[i])))
+
+        print(liste_paires1)
+        print(liste_paires2)
+        print(liste_paires3)
+        print(liste_paires4)
