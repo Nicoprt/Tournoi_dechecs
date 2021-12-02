@@ -1,4 +1,3 @@
-from uuid import uuid4
 from tinydb import TinyDB, Query
 
 db = TinyDB("joueurs.json")

@@ -10,8 +10,8 @@ class Tour:
         self.heure_de_fin = heure_de_fin
         self.matchs = matchs #LISTE DES MATCHS DU TOUR
 
-    def start_tour(self):
-        self.nom = "Round 1"
+    def start_tour(self, nbdetours):
+        self.nom = f"Round {nbdetours}"
         self.date = input("Entrez la date du début du tour: ")
         self.heure_de_debut = input("Entrez l'heure du début du tour: ")
         self.heure_de_fin = input("Entrez l'heure de fin du tour: ")

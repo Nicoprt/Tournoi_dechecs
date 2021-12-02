@@ -5,6 +5,8 @@ import sys
 from typing import List
 from models.player_model import Joueur
 from models.tournoi_model import Tournoi, JOUEURS_PAR_TOURNOI
+from models.tour_model import Tour
+from models.match_model import Match
 
 class MenuManager:
     pass
@@ -219,7 +221,7 @@ class TournamentManager:
         nb_de_tours = self.nb_tours_tournoi()
         controle_du_temps = self.controle_du_temps_tournoi()
         joueurs_id = UserManager.get_id(UserManager())
-        tournament = Tournoi(nom, lieu, date, description, controle_du_temps, int(nb_de_tours), joueurs_id)
+        tournament = Tournoi(nom, lieu, date, description, controle_du_temps, int(nb_de_tours), joueurs_id) # RAJOUTER "RONDES": Liste des instances rondes
         self.tournoi_infos.append(tournament)
         self.players_in_tournament =UserManager.__repr__(self=UserManager())
 
@@ -242,11 +244,19 @@ class TournamentManager:
             liste_matchs.append((Joueur.__str__(second_half[i])))
         return liste_matchs
 
+    # TRIER LES JOURS EN FONCTION DE LEURS POINTS
+    def tri_en_fonction_des_points(self):
+        pass
 
-class RunTournament:
-
-    def __init__(self, tournament):
-        self.tournament = tournament
+    def start_tournoi(self):
+        self.get_tournoi()
+        UserManager.get_players(UserManager())
+        self.get_elo()
+        self.generate_pairs_tour1()
+        for i in range(int(TournamentManager().nb_tours_tournoi())):
+            Tour.start_tour(Tour(), i)
+            "Joue les matchs puis return results"
+        pass
 
 
 j = UserManager()
