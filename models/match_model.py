@@ -27,11 +27,11 @@ class Match:
             self.j1score += 0.5
             self.j2score += 0.5
 
-        return self.j1, self.j2, self.j1score, self.j2score
+        #return self.j1, self.j2, self.j1score, self.j2score
 
-m = Match("a", "b")
-m.play_match()
-m.__repr__()
+#m = Match("a", "b")
+#m.play_match()
+#m.__repr__()
 
 """
     def ajouter_des_points(self):

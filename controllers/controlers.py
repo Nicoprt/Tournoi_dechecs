@@ -115,11 +115,14 @@ class UserManager:
     def __repr__(self):
         return f"{self.players}"
 
-class TournamentManager:
+    def return_players(self):
+        self.get_players()
+        return self.players
 
-    def __init__(self):
+class TournamentManager:
+    def __init__(self, players_in_tournament):
         self.tournoi_infos = []
-        self.players_in_tournament = []
+        self.players_in_tournament = players_in_tournament
         #self.players_in_tournament_sorted = []
 
     def nom_tournoi(self):
@@ -211,7 +214,7 @@ class TournamentManager:
         return control
 
     def __repr__(self):
-        return f"{self.tournoi_infos}"
+        return print(f"{self.tournoi_infos} Joueurs du tournoi: {self.players_in_tournament}")
 
     def get_tournoi(self):
         nom = self.nom_tournoi()
@@ -221,22 +224,22 @@ class TournamentManager:
         nb_de_tours = self.nb_tours_tournoi()
         controle_du_temps = self.controle_du_temps_tournoi()
         joueurs_id = UserManager.get_id(UserManager())
-        tournament = Tournoi(nom, lieu, date, description, controle_du_temps, int(nb_de_tours), joueurs_id) # RAJOUTER "RONDES": Liste des instances rondes
+        tournament = Tournoi(nom=nom, lieu=lieu, date=date, description=description,
+                             controle_du_temps=controle_du_temps,
+                             nb_de_tours=int(nb_de_tours), joueurs_id=joueurs_id) # RAJOUTER "RONDES": Liste des instances rondes
         self.tournoi_infos.append(tournament)
-        self.players_in_tournament =UserManager.__repr__(self=UserManager())
-
 
     #TRIER LES JOURS EN FONCTION DE LEUR ELO
-    def get_elo(self):
+    def sort_elo(self):
         sorted_elos = sorted(self.players_in_tournament, key=lambda x: x.elo, reverse=True)
         self.players_in_tournament.append(sorted_elos)
         return sorted_elos
 
     def generate_pairs_tour1(self):
-        length = len(self.get_elo())
+        length = len(self.sort_elo())
         diviser_liste = length // 2
-        first_half = self.get_elo()[:diviser_liste]
-        second_half = self.get_elo()[diviser_liste:]
+        first_half = self.sort_elo()[:diviser_liste]
+        second_half = self.sort_elo()[diviser_liste:]
         liste_matchs = []
         for i in range(JOUEURS_PAR_TOURNOI // 2):
             print(f"{(Joueur.__str__(first_half[i]))} joue contre {(Joueur.__str__(second_half[i]))}")
@@ -251,7 +254,7 @@ class TournamentManager:
     def start_tournoi(self):
         self.get_tournoi()
         UserManager.get_players(UserManager())
-        self.get_elo()
+        self.sort_elo()
         self.generate_pairs_tour1()
         for i in range(int(TournamentManager().nb_tours_tournoi())):
             Tour.start_tour(Tour(), i)
@@ -260,16 +263,23 @@ class TournamentManager:
 
 
 j = UserManager()
-j.get_players()
-print(j.players)
-print(UserManager().players)
-t = TournamentManager()
-t.get_tournoi()
+t = TournamentManager(UserManager().return_players())
+#t.get_tournoi()
+print(t)
+#t.sort_elo()
+#print(t.sort_elo())
+#t.generate_pairs_tour1()
+
+"""
+print(type(t.players_in_tournament))
+t.get_tournoi(j.players)
+#t.sort_elo()
 print(t.players_in_tournament)
+t.__repr__()
+"""
 
-
-#t.get_elo()
-#print(t.get_elo())
+#t.sort_elo()
+#print(t.sort_elo())
 #t.generate_pairs_tour1()
 #print(t.generate_pairs_tour1())
 

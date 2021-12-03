@@ -3,7 +3,7 @@ from uuid import uuid4
 from tinydb import TinyDB
 from player_model import Joueur
 
-JOUEURS_PAR_TOURNOI = 1
+JOUEURS_PAR_TOURNOI = 4
 db = TinyDB("db.json")
 
 
