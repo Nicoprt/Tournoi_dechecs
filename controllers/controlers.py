@@ -109,7 +109,7 @@ class UserManager:
         nb_de_joueurs = JOUEURS_PAR_TOURNOI
         for i in range(nb_de_joueurs):
             j_id = i
-            self.players_id.append(Joueur.getid(Joueur(j_id=j_id)))
+            self.players_id.append(Joueur.get_id(Joueur(j_id=j_id)))
         return f"{self.players_id}"
 
     def __repr__(self):

@@ -1,49 +1,80 @@
 import random
+from player_model import Joueur
 
 
 class Match:
 
-    def __init__(self, j1=None, j2=None, j1score=0, j2score=0):
+    def __init__(self, j1: Joueur, j2: Joueur):
         self.j1 = j1
         self.j2 = j2
-        self.j1score = j1score
-        self.j2score = j2score
+        self.winner = None
+        self.result = ()
 
     def __repr__(self):
-        return print(f"Resultat du match : {self.j1}: {self.j1score} point(s) {self.j2}: {self.j2score} point(s)")
+        return print(f"Resultat du match : {self.j1},{self.j2}: {self.result} ")
 
-    def play_match(self):
+    def play(self):
+        score_1 = 0
+        score_2 = 0
         random_result = random.randint(1, 3)
         if random_result == 1:
-            winner = self.j1
-            self.j1score += 1
-            self.j2score += 0
+            self.winner = self.j1
+            self.j1.nb_de_points += 1
+            score_1, score_2 = 1, 0
         elif random_result == 2:
-            winner = self.j2
-            self.j1score += 0
-            self.j2score += 1
+            self.winner = self.j2
+            self.j2.nb_de_points += 1
+            score_1, score_2 = 0, 1
         elif random_result == 3:
-            winner = None
-            self.j1score += 0.5
-            self.j2score += 0.5
+            self.winner = None
+            self.j1.nb_de_points += 0.5
+            self.j2.nb_de_points += 0.5
+            score_1, score_2 = 0.5, 0.5
+        self.result = (score_1, score_2)
+        #self.result.append(score_2)
 
-        #return self.j1, self.j2, self.j1score, self.j2score
+    #@property
+    def get_winner(self):
+        return self.winner
 
-#m = Match("a", "b")
-#m.play_match()
-#m.__repr__()
+    #@property
+    def get_result(self):
+        return self.result
+
+    def adversaires(self):
+        return f"Ce match se joueur entre {self.j1} et {self.j2}"
+
+
+
+if __name__ == "__main__":
+    nicolas = Joueur(
+        **{"nom_de_famille": "Parent", "prenom": "Nicolas", "date_de_naissance": "18/08/92", "sexe": "Homme",
+           "nb_de_points": 0, "elo": None, "j_id": "1"})
+    abdelaziz = Joueur(
+        **{"nom_de_famille": "Marjane", "prenom": "abdelaziz", "date_de_naissance": "18/08/92", "sexe": "Homme",
+           "nb_de_points": 0, "elo": None, "j_id": "2"}
+    )
+
+    my_match = Match(nicolas, abdelaziz)
+    my_match.play()
+    my_match.__repr__()
+
+
+# m = Match("a", "b")
+# m.play_match()
+# m.__repr__()
 
 """
     def ajouter_des_points(self):
-        j1score = int((input("Entez le nombre de points du Joueur1 ")))
-        j2score = int((input("Entez le nombre de points du Joueur2 ")))
+        j1_score = int((input("Entez le nombre de points du Joueur1 ")))
+        j2_score = int((input("Entez le nombre de points du Joueur2 ")))
         message = f"Erreur le nombre de points doit être un 0, 0.5 ou 1"
         try:
-            if j1score == 0 or j1score == 1 or j1score == 0.5:
-                j1score = int((input("Entez le nombre de points du Joueur1 ")))
+            if j1_score == 0 or j1_score == 1 or j1_score == 0.5:
+                j1_score = int((input("Entez le nombre de points du Joueur1 ")))
             else: raise ValueError(message)
-            if j2score == 0 or j2score == 1 or j2score == 0.5:
-                j2score = int((input("Entez le nombre de points du Joueur2 ")))
+            if j2_score == 0 or j2_score == 1 or j2_score == 0.5:
+                j2_score = int((input("Entez le nombre de points du Joueur2 ")))
             else:raise ValueError(message)
 
         except: print(message)
