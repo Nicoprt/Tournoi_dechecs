@@ -2,7 +2,7 @@ from operator import attrgetter
 from uuid import uuid4
 from tinydb import TinyDB
 import sys
-from typing import List
+#from typing import List, get_args
 from models.player_model import Joueur
 from models.tournoi_model import Tournoi, JOUEURS_PAR_TOURNOI
 from models.tour_model import Tour
@@ -12,10 +12,18 @@ class MenuManager:
     pass
 
 class UserManager:
-
-    def __init__(self):
+    """interface utilisateur du tournoi pour stocker les données entrantes des joueurs"""
+    def __init__(self, nb_de_joueurs=JOUEURS_PAR_TOURNOI):
+        self.nb_de_joueurs = nb_de_joueurs
         self.players = []
-        self.players_id = []
+        """
+        if players:
+            self.players = players
+        else:
+            self.create_players()
+        """
+        #self.players_id = []
+
 
     def demander_nom(self):
         conforme = False
@@ -99,7 +107,7 @@ class UserManager:
             date_de_naissance = self.demander_date_de_naissance()
             sexe = self.demander_sexe()
             elo = self.demander_elo()
-            j_id = str(i)
+            j_id = int(i)
             nb_de_points = 0
             player = Joueur(nom_de_famille=nom_de_famille, prenom=prenom, date_de_naissance=date_de_naissance,
                             sexe=sexe, nb_de_points=nb_de_points, elo=elo, j_id=j_id)
@@ -112,15 +120,21 @@ class UserManager:
             self.players_id.append(Joueur.get_id(Joueur(j_id=j_id)))
         return f"{self.players_id}"
 
-    def __repr__(self):
+    def afficher_joueurs(self):
         return f"{self.players}"
 
-    def return_players(self):
-        self.get_players()
+    def joueurs_id(self):
+        liste_id = []
+        for joueur in self.players:
+            liste_id.append(joueur.get_id())
+        return liste_id
+
+    def get_players(self):
         return self.players
 
 class TournamentManager:
-    def __init__(self, players_in_tournament):
+    """interface utilisateur du tournoi pour stocker les données entrantes du tournoi"""
+    def __init__(self, user_manager):
         self.tournoi_infos = []
         self.players_in_tournament = players_in_tournament
         #self.players_in_tournament_sorted = []
@@ -213,46 +227,51 @@ class TournamentManager:
                 print("Entrez 1, 2 ou 3 pour le contrôle du temps du tournoi")
         return control
 
-    def __repr__(self):
+    def afficher_tournoi(self):
         return print(f"{self.tournoi_infos} Joueurs du tournoi: {self.players_in_tournament}")
 
-    def get_tournoi(self):
+    def create_tournoi(self):
         nom = self.nom_tournoi()
         lieu = self.lieu_tournoi()
         date = self.date_du_tournoi()
         description = self.description_tournoi()
         nb_de_tours = self.nb_tours_tournoi()
         controle_du_temps = self.controle_du_temps_tournoi()
-        joueurs_id = UserManager.get_id(UserManager())
+        tours = Tour
+        joueurs_id = []
+        for joueur in self.players_in_tournament:
+            joueurs_id.append(joueur.get_id())
         tournament = Tournoi(nom=nom, lieu=lieu, date=date, description=description,
                              controle_du_temps=controle_du_temps,
-                             nb_de_tours=int(nb_de_tours), joueurs_id=joueurs_id) # RAJOUTER "RONDES": Liste des instances rondes
+                             nb_de_tours=int(nb_de_tours), tours=tours, joueurs_id=joueurs_id) # RAJOUTER "RONDES": Liste des instances rondes
         self.tournoi_infos.append(tournament)
 
-    #TRIER LES JOURS EN FONCTION DE LEUR ELO
     def sort_elo(self):
+        """tri des joueurs en fonction de leur elo"""
+        sorted_players = []
         sorted_elos = sorted(self.players_in_tournament, key=lambda x: x.elo, reverse=True)
-        self.players_in_tournament.append(sorted_elos)
+        #sorted_players.append(sorted_elos)
         return sorted_elos
 
     def generate_pairs_tour1(self):
-        length = len(self.sort_elo())
-        diviser_liste = length // 2
+        players_sorted = self.sort_elo()
+        diviser_liste = len(players_sorted) // 2
         first_half = self.sort_elo()[:diviser_liste]
         second_half = self.sort_elo()[diviser_liste:]
         liste_matchs = []
-        for i in range(JOUEURS_PAR_TOURNOI // 2):
-            print(f"{(Joueur.__str__(first_half[i]))} joue contre {(Joueur.__str__(second_half[i]))}")
-            liste_matchs.append((Joueur.__str__(first_half[i])))
-            liste_matchs.append((Joueur.__str__(second_half[i])))
+        for joueur in range(JOUEURS_PAR_TOURNOI // 2):
+            liste_matchs.append(first_half[joueur])
+            liste_matchs.append(second_half[joueur])
+            print(f"{first_half[joueur]} joue contre {second_half[joueur]}")
         return liste_matchs
 
     # TRIER LES JOURS EN FONCTION DE LEURS POINTS
     def tri_en_fonction_des_points(self):
         pass
 
+    """
     def start_tournoi(self):
-        self.get_tournoi()
+        self.create_tournoi()
         UserManager.get_players(UserManager())
         self.sort_elo()
         self.generate_pairs_tour1()
@@ -260,39 +279,21 @@ class TournamentManager:
             Tour.start_tour(Tour(), i)
             "Joue les matchs puis return results"
         pass
+    """
 
-
-j = UserManager()
-t = TournamentManager(UserManager().return_players())
-#t.get_tournoi()
-print(t)
-#t.sort_elo()
-#print(t.sort_elo())
-#t.generate_pairs_tour1()
-
-"""
-print(type(t.players_in_tournament))
-t.get_tournoi(j.players)
-#t.sort_elo()
+j = UserManager(JOUEURS_PAR_TOURNOI)
+j.create_players()
+t = TournamentManager(j)
+t.create_tournoi()
 print(t.players_in_tournament)
-t.__repr__()
-"""
-
-#t.sort_elo()
-#print(t.sort_elo())
-#t.generate_pairs_tour1()
-#print(t.generate_pairs_tour1())
-
-
-
-
-
-
-"""
-t = TournamentManager()
-t.get_tournoi()
+print(t.sort_elo())
+print(t.players_in_tournament)
 print(t.tournoi_infos)
-print(t.generate_pairs())
-"""
+print()
+t.generate_pairs_tour1()
+
+
+
+
 
 

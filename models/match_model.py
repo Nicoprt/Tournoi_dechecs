@@ -33,11 +33,11 @@ class Match:
         self.result = (score_1, score_2)
         #self.result.append(score_2)
 
-    #@property
+    @property
     def get_winner(self):
         return self.winner
 
-    #@property
+    @property
     def get_result(self):
         return self.result
 

@@ -1,12 +1,13 @@
 from tournoi_model import Tournoi
 from match_model import Match
-from typing import List
+from typing import List, get_args
+from models.tournoi_model import Tournoi
 from datetime import datetime
 
 
 class Tour:
     def __init__(self, nom: str = None, date: str = None, debut: datetime = None, fin: datetime = None,
-                 matchs=List[Match]):
+                 matchs=list[Match]):
         self.nom = nom
         self.date = date
         self.debut = debut
@@ -14,8 +15,11 @@ class Tour:
         self.matchs = matchs # LISTE DES MATCHS DU TOUR
         self.resultats = []
 
-    def play(self):
-        for match in self.matchs: #expected type 'collections.iterable' got 'type[list[Match]] ' instead
+    def get_matchs(self):
+            pass
+
+    def play_tour(self):
+        for match in get_args(self.matchs):
             match.play()
             self.resultats.append(match.get_result)
 
@@ -36,6 +40,8 @@ class Tour:
     def afficher_resultats_tour(self):
         for adversaire, resultat_joueur in zip(m.adversaires, m.resultats_joueurs):
             print(f"{adversaire}, a {resultat_joueur} point(s)")
-"""
+
 my_turn = Tour()
-my_turn.play()
+my_turn.play_tour()
+print(type(List[Match]))
+"""

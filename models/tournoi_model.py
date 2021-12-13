@@ -9,7 +9,7 @@ db = TinyDB("db.json")
 
 class Tournoi:
     def __init__(self, nom=None, lieu=None, date=None
-                 , description=None, controle_du_temps=None, nb_de_tours: int = 4, tours=List, joueurs_id=List):
+                 , description=None, controle_du_temps=None, nb_de_tours: int = 4, tours=list, joueurs_id=list):
         self.nom = nom
         self.lieu = lieu
         self.date = date
