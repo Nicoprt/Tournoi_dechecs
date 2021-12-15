@@ -42,7 +42,7 @@ class Match:
         return self.result
 
     def adversaires(self):
-        return f"Ce match se joueur entre {self.j1} et {self.j2}"
+        return f"Ce match se joue entre {self.j1} et {self.j2}"
 
 
 

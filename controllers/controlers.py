@@ -2,11 +2,12 @@ from operator import attrgetter
 from uuid import uuid4
 from tinydb import TinyDB
 import sys
-#from typing import List, get_args
+from typing import get_args
 from models.player_model import Joueur
 from models.tournoi_model import Tournoi, JOUEURS_PAR_TOURNOI
 from models.tour_model import Tour
 from models.match_model import Match
+from datetime import datetime
 
 class MenuManager:
     pass
@@ -133,7 +134,7 @@ class UserManager:
         return self.players
 
 class TournamentManager:
-    """interface utilisateur du tournoi pour stocker les données entrantes du tournoi"""
+    """interface utilisateur du tournoi pour stocker les données entrantes du tournoi et lancer le tournoi"""
     def __init__(self, user_manager):
         self.tournoi_infos = []
         self.players_in_tournament = players_in_tournament
@@ -237,7 +238,7 @@ class TournamentManager:
         description = self.description_tournoi()
         nb_de_tours = self.nb_tours_tournoi()
         controle_du_temps = self.controle_du_temps_tournoi()
-        tours = Tour
+        tours = [self.generate_pairs_tour1()]
         joueurs_id = []
         for joueur in self.players_in_tournament:
             joueurs_id.append(joueur.get_id())
@@ -248,25 +249,31 @@ class TournamentManager:
 
     def sort_elo(self):
         """tri des joueurs en fonction de leur elo"""
-        sorted_players = []
         sorted_elos = sorted(self.players_in_tournament, key=lambda x: x.elo, reverse=True)
-        #sorted_players.append(sorted_elos)
         return sorted_elos
 
     def generate_pairs_tour1(self):
+        """Association des joueurs en fonction de leur elo tour 1"""
         players_sorted = self.sort_elo()
         diviser_liste = len(players_sorted) // 2
         first_half = self.sort_elo()[:diviser_liste]
         second_half = self.sort_elo()[diviser_liste:]
-        liste_matchs = []
+        liste_matchs_tour1 = []
         for joueur in range(JOUEURS_PAR_TOURNOI // 2):
-            liste_matchs.append(first_half[joueur])
-            liste_matchs.append(second_half[joueur])
+            liste_matchs_tour1.append(first_half[joueur])
+            liste_matchs_tour1.append(second_half[joueur])
             print(f"{first_half[joueur]} joue contre {second_half[joueur]}")
-        return liste_matchs
+        return Tour(nom="Round1", debut=datetime.now(), fin=datetime.now(),
+                    matchs=liste_matchs_tour1)
 
-    # TRIER LES JOURS EN FONCTION DE LEURS POINTS
+    def start_tour(self):
+        for tour in self.tournoi_infos:
+            tour.play_tour()
+
+        return tour
+
     def tri_en_fonction_des_points(self):
+        """tri des joueurs en fonction de leurs points tour 2/3/4"""
         pass
 
     """
@@ -285,12 +292,7 @@ j = UserManager(JOUEURS_PAR_TOURNOI)
 j.create_players()
 t = TournamentManager(j)
 t.create_tournoi()
-print(t.players_in_tournament)
-print(t.sort_elo())
-print(t.players_in_tournament)
 print(t.tournoi_infos)
-print()
-t.generate_pairs_tour1()
 
 
 
