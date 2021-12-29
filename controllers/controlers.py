@@ -23,10 +23,7 @@ class UserManager:
         else:
             self.create_players()
         """
-        #self.players_id = []
-
-
-    def demander_nom(self):
+    def demander_information(self, type_info: str):
         conforme = False
         while not conforme:
             nom = input("Nom:")
@@ -98,16 +95,15 @@ class UserManager:
                 return elo
             except: print(message)
 
-
     def get_players(self):
         nb_de_joueurs = JOUEURS_PAR_TOURNOI
         for i in range(nb_de_joueurs):
             print("Joueur:", i + 1)
-            nom_de_famille = self.demander_nom()
-            prenom = self.demander_prenom()
-            date_de_naissance = self.demander_date_de_naissance()
-            sexe = self.demander_sexe()
-            elo = self.demander_elo()
+            nom_de_famille = f"famille{i}"#self.demander_nom()
+            prenom = f"prenom{i}"#self.demander_prenom()
+            date_de_naissance = f"201{i}/01/01"#self.demander_date_de_naissance()
+            sexe = f"masculin"#self.demander_sexe()
+            elo = i*5#self.demander_elo()
             j_id = int(i)
             nb_de_points = 0
             player = Joueur(nom_de_famille=nom_de_famille, prenom=prenom, date_de_naissance=date_de_naissance,
@@ -139,6 +135,12 @@ class TournamentManager:
         self.tournoi_infos = []
         self.players_in_tournament = players_in_tournament
         #self.players_in_tournament_sorted = []
+
+    def __str__(self):
+        S=""
+        for info in self.tournoi_infos:
+            S+=str(info)
+        return f"{S},\n {self.players_in_tournament}"
 
     def nom_tournoi(self):
         conforme = False
@@ -228,24 +230,35 @@ class TournamentManager:
                 print("Entrez 1, 2 ou 3 pour le contrôle du temps du tournoi")
         return control
 
-    def afficher_tournoi(self):
-        return print(f"{self.tournoi_infos} Joueurs du tournoi: {self.players_in_tournament}")
-
-    def create_tournoi(self):
-        nom = self.nom_tournoi()
-        lieu = self.lieu_tournoi()
-        date = self.date_du_tournoi()
-        description = self.description_tournoi()
-        nb_de_tours = self.nb_tours_tournoi()
-        controle_du_temps = self.controle_du_temps_tournoi()
-        tours = [self.generate_pairs_tour1()]
-        joueurs_id = []
-        for joueur in self.players_in_tournament:
-            joueurs_id.append(joueur.get_id())
-        tournament = Tournoi(nom=nom, lieu=lieu, date=date, description=description,
-                             controle_du_temps=controle_du_temps,
-                             nb_de_tours=int(nb_de_tours), tours=tours, joueurs_id=joueurs_id) # RAJOUTER "RONDES": Liste des instances rondes
-        self.tournoi_infos.append(tournament)
+    def play(self, tour_to_play=None):
+        if tour_to_play:
+            tour_to_play.play()
+        else:
+            nom = f"tournoi1"#self.nom_tournoi()
+            lieu = f"paris"#self.lieu_tournoi()
+            date = f"2022/01/01"#self.date_du_tournoi()
+            description = f"grand tournoi"#self.description_tournoi()
+            nb_de_tours = 4#self.nb_tours_tournoi()
+            controle_du_temps = "Blitz"#self.controle_du_temps_tournoi()
+            tours = []
+            tour_1 = self.generate_tour_1()
+            tour_1.play()
+            tours.append(tour_1)
+            tour_2 = self.generate_tour_n()
+            tour_2.play()
+            tours.append(tour_2)
+            """
+            for tour in range(3):
+                self.generate_tour_n().play()
+                tours.append(self.generate_tour_n())
+            """
+            joueurs_id = []
+            for joueur in self.players_in_tournament:
+                joueurs_id.append(joueur.get_id())
+            tournament = Tournoi(nom=nom, lieu=lieu, date=date, description=description,
+                                 controle_du_temps=controle_du_temps,
+                                 nb_de_tours=int(nb_de_tours), tours=tours, joueurs_id=joueurs_id)
+            self.tournoi_infos.append(tournament)
 
     def sort_elo(self):
         """tri des joueurs en fonction de leur elo"""
@@ -259,34 +272,35 @@ class TournamentManager:
         first_half = self.sort_elo()[:diviser_liste]
         second_half = self.sort_elo()[diviser_liste:]
         liste_matchs_tour1 = []
-        for joueur in range(JOUEURS_PAR_TOURNOI // 2):
-            liste_matchs_tour1.append(first_half[joueur])
-            liste_matchs_tour1.append(second_half[joueur])
-            print(f"{first_half[joueur]} joue contre {second_half[joueur]}")
-        return Tour(nom="Round1", debut=datetime.now(), fin=datetime.now(),
-                    matchs=liste_matchs_tour1)
+        for i in range(diviser_liste):
+            liste_matchs_tour1.append(Match(first_half[i], second_half[i]))
+            print(f"{first_half[i]} JOUE CONTRE {second_half[i]}")
+        return Tour(matchs=liste_matchs_tour1, nom="Round1", debut=datetime.now(), fin=datetime.now())
 
-    def start_tour(self):
-        for tour in self.tournoi_infos:
-            tour.play_tour()
+    def generate_tour_n(self):
+        """Au prochain tour, triez tous les joueurs en fonction de leur nombre total de points.
+        Si plusieurs joueurs ont le même nombre de points, triez-les en fonction de leur rang.
+        Associez le joueur 1 avec le joueur 2, le joueur 3 avec le joueur 4, et ainsi de suite.
+        Si le joueur 1 a déjà joué contre le joueur 2, associez-le plutôt au joueur 3.
+        Répétez les étapes 3 et 4 jusqu'à ce que le tournoi soit terminé.
+        """
+        #LISTE DES MATCHS DEJA JOUES POUR NE FAIRE LES ASSOCIATIONS DE JOUEURS?
 
-        return tour
+        players_sorted = self.sort_players_by_points_and_elo()
+        diviser_liste = len(players_sorted) // 2
+        liste_matchs_tour_n = []
+        for i in range(diviser_liste):
+            liste_matchs_tour_n.append(Match(players_sorted[i], players_sorted[i+1]))
+            print(f"{players_sorted[i]} JOUE CONTRE {players_sorted[i+1]}")
+        return Tour(matchs=liste_matchs_tour_n, nom="Round_n", debut=datetime.now(), fin=datetime.now())
+
+    #LISTE TOURS => JOUE TOUR => MAJ POINTS JOUEURS DU TOUR => START TOUR 2 A 4
+
 
     def tri_en_fonction_des_points(self):
         """tri des joueurs en fonction de leurs points tour 2/3/4"""
         pass
 
-    """
-    def start_tournoi(self):
-        self.create_tournoi()
-        UserManager.get_players(UserManager())
-        self.sort_elo()
-        self.generate_pairs_tour1()
-        for i in range(int(TournamentManager().nb_tours_tournoi())):
-            Tour.start_tour(Tour(), i)
-            "Joue les matchs puis return results"
-        pass
-    """
 
 j = UserManager(JOUEURS_PAR_TOURNOI)
 j.create_players()

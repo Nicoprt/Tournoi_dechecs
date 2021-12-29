@@ -27,11 +27,8 @@ class Tour:
         self.debut = datetime.now() #input("Entrez l'heure du début du tour: ")
         self.fin = datetime.now() #input("Entrez l'heure de fin du tour: ")
 
-    def afficher_matchs(self):
-        return f"{self.matchs}"
-
-    def __repr__(self):
-        return f"Tour: {self.nom}, {self.debut}, {self.fin}, {self.matchs}"
+    def __str__(self):
+        return f"{self.nom}, {self.debut}, {self.fin}, "+'\n'.join(map(str, self.matchs))
 
 
 """

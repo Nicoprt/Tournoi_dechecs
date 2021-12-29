@@ -10,8 +10,8 @@ class Match:
         self.winner = None
         self.result = ()
 
-    def __repr__(self):
-        return print(f"Resultat du match : {self.j1},{self.j2}: {self.result} ")
+    def __str__(self):
+        return f"Resultat du match : {str(self.j1)},{str(self.j2)}: {self.result} "
 
     def play(self):
         score_1 = 0

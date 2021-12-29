@@ -25,10 +25,7 @@ class Joueur:
         self.nb_de_points += ajustement_points
 
     def __str__(self):
-        return f" {self.nom_de_famille}, {self.prenom}"
-
-    def __repr__(self):
-        return f"Joueur: {self.nom_de_famille}, {self.prenom}, {self.date_de_naissance}, {self.sexe}, " \
+        return f"{self.nom_de_famille}, {self.prenom}, {self.date_de_naissance}, {self.sexe}, " \
                f"{self.nb_de_points}, {self.elo}, {self.j_id}"
 
     def serialize(self):

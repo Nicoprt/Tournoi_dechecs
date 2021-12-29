@@ -3,7 +3,7 @@ from uuid import uuid4
 from tinydb import TinyDB
 from player_model import Joueur
 
-JOUEURS_PAR_TOURNOI = 2
+JOUEURS_PAR_TOURNOI = 4
 db = TinyDB("db.json")
 
 
@@ -23,9 +23,9 @@ class Tournoi:
     def tournoi_id(self):
         return f"{self.joueurs_id}"
 
-
-    def __repr__(self):
-        return f"Tournoi: {self.nom}, {self.lieu}, {self.date}, {self.description}, {self.controle_du_temps}, {self.nb_de_tours}, {self.tours}, {self.joueurs_id}"
+    def __str__(self):
+        return f"Tournoi: {self.nom}, {self.lieu}, {self.date}, {self.description}, {self.controle_du_temps}," \
+               f"{self.nb_de_tours}," + '\n'.join(map(str, self.tours))+ f", {self.joueurs_id}"
 
     def afficher_liste_joueurs(self):
         return print(f" Liste des joueurs(id) :{self.joueurs_id}")
